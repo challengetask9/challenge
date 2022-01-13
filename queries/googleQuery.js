@@ -1,137 +1,227 @@
 const axios = require("axios");
+const base = `https://www.googleapis.com/analytics/v3/data/ga?access_token=`;
+const viewId = `&ids=ga%3A258121173`;
+const report = require("../models/report");
+
+// create local report with success or failure
+const createReport = (data, success) => {
+  report.create(
+    {
+      serviceName: "Google",
+      time: new Date(),
+      metric: data,
+      numKPI: 1,
+      success: success,
+    },
+    (err, result) => {
+      if (err) console.log(err);
+      else console.log(result);
+    }
+  );
+};
 
 // average session duration
-/*https://www.googleapis.com/analytics/v3/data/ga?access_token=ya29.A0ARrdaM859Vfbhyuzk2WZmfIVTc6M4IOIBejy0E2_3io4vayTELVJpId1aUCdNvGD3KPHuaOUPvV7W8YLZatvIPsOnk-N3wgVQJnl3lWucfPciNX2oAalYTD_dIOh2YItsCrhtyyMg3nAAq24faXJJpXQXwP1&ids=ga%3A258121173&metrics=ga%3AavgSessionDuration&start-date=7daysAgo&end-date=today*/
-const getAverageSession = async (userCredentials) => {
+const getAverageSession = async (access_token, databoxClient) => {
   axios({
     method: "get",
-    url: `https://www.googleapis.com/analytics/v3/data/ga?access_token=${userCredentials.credentials.access_token}&ids=ga%3A258121173&metrics=ga%3AavgSessionDuration&start-date=7daysAgo&end-date=today`,
+    url: `${
+      base + access_token + viewId
+    }&metrics=ga%3AavgSessionDuration&start-date=7daysAgo&end-date=today`,
   }).then((response) => {
     const averageSessionMetric = {
-      dateStart: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-      dateEnd: new Date(),
-      averageSessionDuration:
-        response.data.totalsForAllResults["ga:avgSessionDuration"],
+      key: "averageSession",
+      value: response.data.totalsForAllResults["ga:avgSessionDuration"],
+      attributes: {
+        dateStart: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+      },
     };
-    console.log(averageSessionMetric);
+    // console.log(averageSessionMetric);
+    databoxClient.push(averageSessionMetric, (res) => {
+      if (res.status != "OK") createReport(averageSessionMetric, false);
+      else createReport(averageSessionMetric, true);
+    });
   });
 };
 
 // new users
-/* https://www.googleapis.com/analytics/v3/data/ga?access_token=ya29.A0ARrdaM859Vfbhyuzk2WZmfIVTc6M4IOIBejy0E2_3io4vayTELVJpId1aUCdNvGD3KPHuaOUPvV7W8YLZatvIPsOnk-N3wgVQJnl3lWucfPciNX2oAalYTD_dIOh2YItsCrhtyyMg3nAAq24faXJJpXQXwP1&ids=ga%3A258121173&metrics=ga%3AnewUsers&start-date=7daysAgo&end-date=today */
-const getNewUsers = async (userCredentials) => {
+const getNewUsers = async (access_token, databoxClient) => {
   axios({
     method: "get",
-    url: `https://www.googleapis.com/analytics/v3/data/ga?access_token=${userCredentials.credentials.access_token}&ids=ga%3A258121173&metrics=ga%3AnewUsers&start-date=7daysAgo&end-date=today`,
+    url: `${
+      base + access_token + viewId
+    }&metrics=ga%3AnewUsers&start-date=7daysAgo&end-date=today`,
   }).then((response) => {
     const newUsersMetric = {
-      dateStart: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-      dateEnd: new Date(),
-      newUsers: response.data.totalsForAllResults["ga:newUsers"],
+      key: "newUsers",
+      value: response.data.totalsForAllResults["ga:newUsers"],
+      attributes: {
+        dateStart: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+      },
     };
-    console.log(newUsersMetric);
+    // console.log(newUsersMetric);
+    databoxClient.push(newUsersMetric, (res) => {
+      if (res.status != "OK") createReport(newUsersMetric, false);
+      else createReport(newUsersMetric, true);
+    });
   });
 };
 
 // pageviews
-//https://www.googleapis.com/analytics/v3/data/ga?access_token=ya29.A0ARrdaM859Vfbhyuzk2WZmfIVTc6M4IOIBejy0E2_3io4vayTELVJpId1aUCdNvGD3KPHuaOUPvV7W8YLZatvIPsOnk-N3wgVQJnl3lWucfPciNX2oAalYTD_dIOh2YItsCrhtyyMg3nAAq24faXJJpXQXwP1&ids=ga%3A258121173&metrics=ga%3Apageviews&start-date=7daysAgo&end-date=today
-
-const getPageViews = async(userCredentials) => {
+const getPageViews = async (access_token, databoxClient) => {
   axios({
     method: "get",
-    url: `https://www.googleapis.com/analytics/v3/data/ga?access_token=${userCredentials.credentials.access_token}&ids=ga%3A258121173&metrics=ga%3Apageviews&start-date=7daysAgo&end-date=today`,
+    url: `${
+      base + access_token + viewId
+    }&metrics=ga%3Apageviews&start-date=7daysAgo&end-date=today`,
   }).then((response) => {
     const pageviewsMetric = {
-      dateStart: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-      dateEnd: new Date(),
-      pageviews: response.data.totalsForAllResults["ga:pageviews"],
+      key: "pageviews",
+      value: response.data.totalsForAllResults["ga:pageviews"],
+      attributes: {
+        dateStart: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+      },
     };
-    console.log(pageviewsMetric);
+    // console.log(pageviewsMetric);
+    databoxClient.push(pageviewsMetric, (res) => {
+      if (res.status != 'OK') createReport(pageviewsMetric, false);
+      else createReport(pageviewsMetric, true);
+    });
   });
 };
 
 // percent new sessions
-//https://www.googleapis.com/analytics/v3/data/ga?access_token=ya29.A0ARrdaM859Vfbhyuzk2WZmfIVTc6M4IOIBejy0E2_3io4vayTELVJpId1aUCdNvGD3KPHuaOUPvV7W8YLZatvIPsOnk-N3wgVQJnl3lWucfPciNX2oAalYTD_dIOh2YItsCrhtyyMg3nAAq24faXJJpXQXwP1&ids=ga%3A258121173&metrics=ga%3ApercentNewSessions&start-date=7daysAgo&end-date=today
-const getPercentOfNewSessions = async(userCredentials) => {
+const getPercentOfNewSessions = async (access_token, databoxClient) => {
   axios({
     method: "get",
-    url: `https://www.googleapis.com/analytics/v3/data/ga?access_token=${userCredentials.credentials.access_token}&ids=ga%3A258121173&metrics=ga%3ApercentNewSessions&start-date=7daysAgo&end-date=today`,
+    url: `${
+      base + access_token + viewId
+    }&metrics=ga%3ApercentNewSessions&start-date=7daysAgo&end-date=today`,
   }).then((response) => {
     const percentageOfNewSessionsMetric = {
-      dateStart: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-      dateEnd: new Date(),
-      percentage: response.data.totalsForAllResults["ga:percentNewSessions"],
+      key: "percentNewSessions",
+      value: response.data.totalsForAllResults["ga:percentNewSessions"],
+      attributes: {
+        dateStart: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+      },
     };
-    console.log(percentageOfNewSessionsMetric);
+    //  console.log(percentageOfNewSessionsMetric);
+    databoxClient.push(percentageOfNewSessionsMetric, (res) => {
+      if (res.status != 'OK') createReport(percentageOfNewSessionsMetric, false);
+      else createReport(percentageOfNewSessionsMetric, true);
+    });
   });
 };
 
 // pageviews per sessions
-//www.googleapis.com/analytics/v3/data/ga?access_token=ya29.A0ARrdaM859Vfbhyuzk2WZmfIVTc6M4IOIBejy0E2_3io4vayTELVJpId1aUCdNvGD3KPHuaOUPvV7W8YLZatvIPsOnk-N3wgVQJnl3lWucfPciNX2oAalYTD_dIOh2YItsCrhtyyMg3nAAq24faXJJpXQXwP1&ids=ga%3A258121173&metrics=ga%3ApageviewsPerSession&start-date=7daysAgo&end-date=today
-
-const getPageviewsPerSession = async (userCredentials) => {
+const getPageviewsPerSession = async (access_token, databoxClient) => {
   axios({
     method: "get",
-    url: `https://www.googleapis.com/analytics/v3/data/ga?access_token=${userCredentials.credentials.access_token}&ids=ga%3A258121173&metrics=ga%3ApageviewsPerSession&start-date=7daysAgo&end-date=today`,
+    url: `${
+      base + access_token + viewId
+    }&metrics=ga%3ApageviewsPerSession&start-date=7daysAgo&end-date=today`,
   }).then((response) => {
     const pagebviewsPerSessionMetric = {
-      dateStart: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-      dateEnd: new Date(),
-      pageviewsPerSession:
-        response.data.totalsForAllResults["ga:pageviewsPerSession"],
+      key: "pageviewsPerSession",
+      value: response.data.totalsForAllResults["ga:pageviewsPerSession"],
+      attributes: {
+        dateStart: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+      },
     };
-    console.log(pagebviewsPerSessionMetric);
+    //  console.log(pagebviewsPerSessionMetric);
+    databoxClient.push(pagebviewsPerSessionMetric, (res) => {
+      if (res.status != 'OK') createReport(pagebviewsPerSessionMetric, false);
+      else createReport(pagebviewsPerSessionMetric, true);
+    });
   });
 };
 
 //session per user
-// https://www.googleapis.com/analytics/v3/data/ga?access_token=ya29.A0ARrdaM859Vfbhyuzk2WZmfIVTc6M4IOIBejy0E2_3io4vayTELVJpId1aUCdNvGD3KPHuaOUPvV7W8YLZatvIPsOnk-N3wgVQJnl3lWucfPciNX2oAalYTD_dIOh2YItsCrhtyyMg3nAAq24faXJJpXQXwP1&ids=ga%3A258121173&metrics=ga%3AsessionsPerUser&start-date=7daysAgo&end-date=today
-const getSessionsPerUser = async (userCredentials) => {
+const getSessionsPerUser = async (access_token, databoxClient) => {
   axios({
     method: "get",
-    url: `https://www.googleapis.com/analytics/v3/data/ga?access_token=${userCredentials.credentials.access_token}&ids=ga%3A258121173&metrics=ga%3AsessionsPerUser&start-date=7daysAgo&end-date=today`,
+    url: `${
+      base + access_token + viewId
+    }&metrics=ga%3AsessionsPerUser&start-date=7daysAgo&end-date=today`,
   }).then((response) => {
     const sessionsPerUserMetric = {
-      dateStart: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-      dateEnd: new Date(),
-      sessionsPerUser: response.data.totalsForAllResults["ga:sessionsPerUser"],
+      key: "sessionsPerUser",
+      value: response.data.totalsForAllResults["ga:sessionsPerUser"],
+      attributes: {
+        dateStart: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+      },
     };
-    console.log(sessionsPerUserMetric);
+    // console.log(sessionsPerUserMetric);
+    databoxClient.push(sessionsPerUserMetric, (res) => {
+      if (res.status != 'OK') createReport(sessionsPerUserMetric, false);
+      else createReport(sessionsPerUserMetric, true);
+    });
   });
 };
 
 // users from country and city
-// https://www.googleapis.com/analytics/v3/data/ga?access_token=ya29.A0ARrdaM859Vfbhyuzk2WZmfIVTc6M4IOIBejy0E2_3io4vayTELVJpId1aUCdNvGD3KPHuaOUPvV7W8YLZatvIPsOnk-N3wgVQJnl3lWucfPciNX2oAalYTD_dIOh2YItsCrhtyyMg3nAAq24faXJJpXQXwP1&ids=ga%3A258121173&dimensions=ga%3Acountry%2Cga%3Acity&metrics=ga%3Ausers&start-date=7daysAgo&end-date=today
-const getUsersFilteredByCountyAndCity = async (userCredentials) => {
+const getUsersFilteredByCountyAndCity = async (access_token, databoxClient) => {
   axios({
     method: "get",
-    url: `https://www.googleapis.com/analytics/v3/data/ga?access_token=${userCredentials.credentials.access_token}&ids=ga%3A258121173&dimensions=ga%3Acountry%2Cga%3Acity&metrics=ga%3Ausers&start-date=7daysAgo&end-date=today`,
+    url: `${
+      base + access_token + viewId
+    }&dimensions=ga%3Acountry%2Cga%3Acity&metrics=ga%3Ausers&start-date=7daysAgo&end-date=today`,
   }).then((response) => {
     const filteredUsersByCountryMetric = {
-      dateStart: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-      dateEnd: new Date(),
-      numUsers: response.data.totalsForAllResults["ga:users"],
-      data: response.data.rows,
+      key: "usersLocations",
+      value: response.data.totalsForAllResults["ga:users"],
+      attributes: {
+        dateStart: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+        locations: response.data.rows,
+      },
     };
-    console.log(filteredUsersByCountryMetric);
+    //  console.log(filteredUsersByCountryMetric);
+    databoxClient.push(filteredUsersByCountryMetric, (res) => {
+      if (res.status != 'OK') createReport(filteredUsersByCountryMetric, false);
+      else createReport(filteredUsersByCountryMetric, true);
+    });
   });
 };
 
 // sessions based on browser and OS settings
-// https://www.googleapis.com/analytics/v3/data/ga?access_token=ya29.A0ARrdaM859Vfbhyuzk2WZmfIVTc6M4IOIBejy0E2_3io4vayTELVJpId1aUCdNvGD3KPHuaOUPvV7W8YLZatvIPsOnk-N3wgVQJnl3lWucfPciNX2oAalYTD_dIOh2YItsCrhtyyMg3nAAq24faXJJpXQXwP1&ids=ga%3A258121173&dimensions=ga%3Abrowser%2Cga%3AbrowserVersion%2Cga%3AoperatingSystem%2Cga%3AbrowserSize&metrics=ga%3Asessions&start-date=7daysAgo&end-date=today
-const getSessionsBasedOnBrowserAndOperatingSystemProperties = async (userCredentials) => {
+const getSessionsBasedOnBrowserAndOperatingSystemProperties = async (
+  access_token,
+  databoxClient
+) => {
   axios({
     method: "get",
-    url: `https://www.googleapis.com/analytics/v3/data/ga?access_token=${userCredentials.credentials.access_token}&ids=ga%3A258121173&dimensions=ga%3Abrowser%2Cga%3AbrowserVersion%2Cga%3AoperatingSystem%2Cga%3AbrowserSize&metrics=ga%3Asessions&start-date=7daysAgo&end-date=today`,
+    url: `${
+      base + access_token + viewId
+    }&dimensions=ga%3Abrowser%2Cga%3AbrowserVersion%2Cga%3AoperatingSystem%2Cga%3AbrowserSize&metrics=ga%3Asessions&start-date=7daysAgo&end-date=today`,
   }).then((response) => {
     const filteredSessionsByBrowserAndOSMetric = {
-      dateStart: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-      dateEnd: new Date(),
-      numSessions: response.data.totalsForAllResults["ga:sessions"],
-      data: response.data.rows,
+      key: "sessionBrowsers",
+      value: response.data.totalsForAllResults["ga:sessions"],
+      attributes: {
+        dateStart: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+        properties: response.data.rows,
+      },
     };
-    console.log(filteredSessionsByBrowserAndOSMetric);
+    // console.log(filteredSessionsByBrowserAndOSMetric);
+    databoxClient.push(filteredSessionsByBrowserAndOSMetric, (res) => {
+      if (res.status != 'OK') createReport(filteredSessionsByBrowserAndOSMetric, false);
+      else createReport(filteredSessionsByBrowserAndOSMetric, true);
+    });
   });
+};
+
+// extracting metrices from api and pushing them into databox
+const getGoogleMetrices = async (google_access_token, databoxClient) => {
+  await getAverageSession(google_access_token, databoxClient);
+  await getNewUsers(google_access_token, databoxClient);
+  await getPageViews(google_access_token, databoxClient);
+  await getPercentOfNewSessions(google_access_token, databoxClient);
+  await getPageviewsPerSession(google_access_token, databoxClient);
+  await getSessionsPerUser(google_access_token, databoxClient);
+  await getUsersFilteredByCountyAndCity(google_access_token, databoxClient);
+  await getSessionsBasedOnBrowserAndOperatingSystemProperties(
+    google_access_token,
+    databoxClient
+  );
 };
 
 module.exports = {
@@ -142,5 +232,6 @@ module.exports = {
   getPercentOfNewSessions,
   getSessionsBasedOnBrowserAndOperatingSystemProperties,
   getSessionsPerUser,
-  getUsersFilteredByCountyAndCity
+  getUsersFilteredByCountyAndCity,
+  getGoogleMetrices,
 };

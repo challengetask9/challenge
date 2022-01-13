@@ -4,17 +4,25 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --forceExit",
+    "start": "node app.js"
   },
   "author": "Tomaž Vidovič",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.24.0",
+    "databox": "^2.0.1",
     "dotenv": "^11.0.0",
     "ejs": "^3.1.6",
     "express": "^4.17.2",
     "express-session": "^1.17.2",
     "google-auth-library": "^7.11.0",
-    "googleapis": "^92.0.0"
+    "googleapis": "^92.0.0",
+    "jest": "^27.4.7",
+    "mongodb": "^4.3.0",
+    "mongoose": "^6.1.6"
+  },
+  "devDependencies": {
+    "supertest": "^6.2.1"
   }
 }

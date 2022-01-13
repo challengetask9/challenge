@@ -12,10 +12,13 @@
 <body>
 <div class="container">
     <div class="jumbotron text-center text-primary">
-        <a href="https://github.com/login/oauth/authorize?client_id=<%= client_id %>&scope=repo" class="btn btn-danger"><span class="fa fa-github"></span> Github Login</a>
+        <a href="<%= gitAuthUrl %>" class="btn btn-danger"><span class="fa fa-github"></span> Github Login</a>
     </div>
     <div class="jumbotron text-center text-primary">
         <a href="<%= googleAuthUrl %>" class="btn btn-danger"><span class="fa fa-google"></span> Google Login</a>
+    </div>
+    <div class="jumbotron text-center text-primary">
+        <a href="<%= ytAuthUrl %>" class="btn btn-danger"><span class="fa fa-youtube"></span> YouTube Login</a>
     </div>
 </div>
 </body>
