@@ -29,20 +29,11 @@ I took screenshots and added them to last section "Demonstration"
 ## Deployment
 
 Clone repository and move into directory:
-`git clone https_url && cd challenge`
 
-Install modules needed to test:
-  `npm install`
+`git clone https://github.com/challengetask9/challenge.git && cd challenge`
 
 Run application:
   `npm start`
-  
-## Running test
-
-To perform test run:
-
-  `npm run test`
-
 
 ## Demonstration
 
